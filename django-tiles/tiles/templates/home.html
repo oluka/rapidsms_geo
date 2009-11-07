@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+  
+  {% block content %}
+    <h2>django-tiles tests</h2>
+    <ul>
+    <li><a href="/map/wms/mapnik/">WMS via mapnik-python</a></li>
+    <li><a href="/map/wms/nik2img/">WMS via nik2img/mapnik</a></li>
+    <li><a href="/map/wms/mapserv/">WMS via mapserv command line </a></li>
+    <li><a href="/map/wms/mapscript/">WMS via python-mapscript</a></li>
+    <li><a href="/map/tms/tilecache/">TMS layer (mapnik backend)</a></li>
+    <li><a href="/map/tms/tilecache/?force=1">TMS layer with FORCE=1 (will re-render before caching) (mapnik backend)</a></li>
+    <li><a href="/map/cache/tilecache/">TileCache layer (direct to disk cache)</a> | <a href="/cache/tilecache/">Browse cache</a></li>
+    </ul>  
+
+    {% block login %}
+    {% if user.is_authenticated %}
+        Logged in as <b>{{user.email|escape}}</b>
+    {% endif %}
+    {% if not user.is_authenticated %}
+        <a href='/accounts/login/?next=/map/wms/'>Log In</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <a href="/accounts/logout/?next=/" class="admin">Log Out</a>
+    {% endif %}
+    {% endblock %}
+
+ <h4> credits: <a href="http://bitbucket.org/springmeyer/">http://bitbucket.org/springmeyer/</a></h4>
+  {% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+   {% block js %}
+    <script type="text/javascript" charset="utf-8" src="http://openlayers.org/api/OpenLayers.js">	</script>
+    <script type="text/javascript">
+        var map, lyr;
+        function init(){
+           var map = new OpenLayers.Map($('map'),
+            {   maxResolution: 360/512,
+                projection: "EPSG:4326" ,
+                numZoomLevels: 20,
+                minZoomLevel: 0,
+                maxZoomLevel: 19  });
+
+              {% ifequal method 'wms' %}
+              lyr = new OpenLayers.Layer.WMS("{{ engine }}","/{{ method }}/{{ engine }}", {layers:'world',format:'image/png'} );
+              {% endifequal %}
+              
+              {% ifequal method 'tms' %}
+              lyr = new OpenLayers.Layer.TMS("{{ engine }}","/{{ method }}/{{ engine }}/", 
+              { serviceVersion: "1.0.0", layername: "world",  type: "png" });
+              {% endifequal %}
+                
+              {% ifequal method 'cache' %}
+              lyr = new OpenLayers.Layer.TileCache("{{ engine }}", "/{{ method }}/{{ engine }}/", 
+              "world", { type: "png", });
+              {% endifequal %}
+              
+            map.addLayers([lyr]);
+            //map.fractionalZoom = true;
+            map.zoomToMaxExtent();     
+        }                
+    </script>
+    {% endblock %}
+    
+  </head>
+  {% block onload %}onload="init()"{% endblock %}
+  {% block content %}
+    <h2 style="position:absolute; z-index:10000; left: 100px;"><a href="/">django-tiles</a> - {{ engine }}</h2>
+    <h4 style="position:absolute; z-index:10000; right: 50px;">
+    {% block login %}
+    {% if user.is_authenticated %}
+        Logged in as <b>{{user.email|escape}}</b>
+    {% endif %}
+    {% if not user.is_authenticated %}
+        <a href='/accounts/login/?next=/map/wms/'>Log In</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <a href="/accounts/logout/?next=/" class="admin">Log Out</a>
+    {% endif %}
+    {% endblock %}
+    </h4>
+    <div id="map">
+    </div>
+    
+    {% endblock %}
